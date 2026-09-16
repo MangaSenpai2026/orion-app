@@ -59,3 +59,4 @@ if prompt:
         
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text}
+                                         
