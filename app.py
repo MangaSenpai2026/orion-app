@@ -48,14 +48,15 @@ if prompt:
 
     with st.chat_message("assistant"):
         # Wywołanie z zachowaniem Twojego modelu oraz dodanym narzędziem wyszukiwania
-        response = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt,
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                tools=[{"google_search": {}}]  # <--- To jest klucz do dat i pogody
-            )
-        )
+                    response = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=prompt,
+                config={
+                    "system_instruction": system_prompt,
+                    "tools": [{"google_search": {}}]
+                }
+                    )
+        
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
         
