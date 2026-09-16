@@ -25,7 +25,7 @@ if prompt:
 
     with st.chat_message("assistant"):
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.6-flash",
             contents=prompt,
         )
         st.write(response.text)
