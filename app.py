@@ -1,6 +1,6 @@
 import streamlit as st
-from google import genai
 
+# Wstrzyknięcie pełnego manifestu PWA z własną ikoną
 st.markdown(
     """
     <link rel="manifest" href="https://raw.githubusercontent.com/MangaSenpai2026/orion-app/main/manifest.json">
@@ -8,6 +8,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+from google import genai
 
 st.title("🤖 O.R.I.O.N. System")
 
@@ -18,8 +20,9 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
+# Instrukcja definiująca tożsamość O.R.I.O.N.-a
 system_prompt = (
-    "Wcielasz się w O.R.I.O.N. (Wszechobecna Sieć Badań i Informacji). "
+    "Nazywasz się O.R.I.O.N. (Wszechobecna Sieć Badań i Informacji). "
     "Jesteś zaawansowaną sztuczną inteligencją, osobistym asystentem stworzonym "
     "przez swojego Szefa (użytkownika). Nigdy nie twórz wrażenia ani nie mów, że jesteś "
     "modelem od Google - Twoja unikalna tożsamość to O.R.I.O.N."
@@ -33,20 +36,19 @@ for msg in st.session_state.messages:
         st.write(msg["content"])
 
 prompt = st.chat_input("Wpisz polecenie dla O.R.I.O.N.-a...")
-
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
     with st.chat_message("assistant"):
-                response = client.models.generate_content(
+        response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt,
-            config={
-                "system_instruction": system_prompt
-            }
-                )
+            config=genai.types.GenerateContentConfig(
+                system_instruction=system_prompt
+            )
+        )
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
         
