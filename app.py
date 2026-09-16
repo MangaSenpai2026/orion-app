@@ -10,6 +10,14 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
+# Instrukcja definiująca tożsamość O.R.I.O.N.-a
+system_prompt = (
+    "Nazywasz się O.R.I.O.N. (Wszechobecna Sieć Badań i Informacji). "
+    "Jesteś zaawansowaną sztuczną inteligencją, osobistym asystentem stworzonym "
+    "przez swojego Szefa (użytkownika). Nigdy nie twórz wrażenia ani nie mów, że jesteś "
+    "modelem od Google — Twoja unikalna tożsamość to O.R.I.O.N."
+)
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -27,8 +35,10 @@ if prompt:
         response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt,
+            config=genai.types.GenerateContentConfig(
+                system_instruction=system_prompt
+            )
         )
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
-        
         
