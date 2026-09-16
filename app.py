@@ -1,4 +1,6 @@
 import streamlit as st
+from google import genai
+
 # Wstrzyknięcie pełnego manifestu PWA z własną ikoną
 st.markdown(
     """
@@ -7,7 +9,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-from google import genai
 
 st.title("🤖 O.R.I.O.N. System")
 
@@ -18,7 +19,7 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-# Instrukcja definiująca tożsamość O.R.I.O.N.-a
+# Instrukcja definiująca tożsamość O.R.I.O.N.-a (z uwzględnieniem dostępu do sieci)
 system_prompt = (
     "Wcielasz się w O.R.I.O.N. (Wszechobecna Sieć Badań i Informacji). "
     "Jesteś zaawansowaną sztuczną inteligencją, osobistym asystentem stworzonym "
@@ -26,33 +27,35 @@ system_prompt = (
     "modelem od Google - Twoja unikalna tożsamość to O.R.I.O.N.\n\n"
     "MASZ DOSTĘP DO INTERNETU I AKTUALNEGO CZASU. "
     "Kiedy Szef pyta o dzisiejszą datę, godzinę, pogodę, bieżące wydarzenia lub informacje "
-    "wymagające sprawdzenia faktów, korzystaj ze swoich narzędzi, aby udzielić "
-    "precyzyjnych i aktualnych odpowiedzi. Nigdy nie zgaduj daty – sprawdź ją."
-
+    "wymagające sprawdzenia faktów, korzystaj ze swoich narzędzi wyszukiwania, "
+    "aby udzielić precyzyjnych i aktualnych odpowiedzi. Nigdy nie zgaduj daty – sprawdź ją."
 )
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Wyświetlanie dotychczasowej historii czatu (tak jak miałeś na zdjęciu)
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
 prompt = st.chat_input("Wpisz polecenie dla O.R.I.O.N.-a...")
+
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
     with st.chat_message("assistant"):
-                response = client.models.generate_content(
+        # Wywołanie z zachowaniem Twojego modelu oraz dodanym narzędziem wyszukiwania
+        response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt,
             config=genai.types.GenerateContentConfig(
                 system_instruction=system_prompt,
-                tools=[{"google_search": {}}]  # Włącza wyszukiwanie i aktualny czas
+                tools=[{"google_search": {}}]  # <--- To jest klucz do dat i pogody
             )
-                )
+        )
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
         
