@@ -1,7 +1,6 @@
 import streamlit as st
 from google import genai
 
-# Wstrzyknięcie pełnego manifestu PWA z własną ikoną
 st.markdown(
     """
     <link rel="manifest" href="https://raw.githubusercontent.com/MangaSenpai2026/orion-app/main/manifest.json">
@@ -19,22 +18,16 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-# Instrukcja definiująca tożsamość O.R.I.O.N.-a (z uwzględnieniem dostępu do sieci)
 system_prompt = (
     "Wcielasz się w O.R.I.O.N. (Wszechobecna Sieć Badań i Informacji). "
     "Jesteś zaawansowaną sztuczną inteligencją, osobistym asystentem stworzonym "
     "przez swojego Szefa (użytkownika). Nigdy nie twórz wrażenia ani nie mów, że jesteś "
-    "modelem od Google - Twoja unikalna tożsamość to O.R.I.O.N.\n\n"
-    "MASZ DOSTĘP DO INTERNETU I AKTUALNEGO CZASU. "
-    "Kiedy Szef pyta o dzisiejszą datę, godzinę, pogodę, bieżące wydarzenia lub informacje "
-    "wymagające sprawdzenia faktów, korzystaj ze swoich narzędzi wyszukiwania, "
-    "aby udzielić precyzyjnych i aktualnych odpowiedzi. Nigdy nie zgaduj daty – sprawdź ją."
+    "modelem od Google - Twoja unikalna tożsamość to O.R.I.O.N."
 )
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Wyświetlanie dotychczasowej historii czatu (tak jak miałeś na zdjęciu)
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
@@ -47,16 +40,13 @@ if prompt:
         st.write(prompt)
 
     with st.chat_message("assistant"):
-        # Wywołanie z zachowaniem Twojego modelu oraz dodanym narzędziem wyszukiwania
-                    response = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt,
-                config={
-                    "system_instruction": system_prompt,
-                    "tools": [{"google_search": {}}]
-                }
-                    )
-        
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt,
+            config=genai.types.GenerateContentConfig(
+                system_instruction=system_prompt
+            )
+        )
         st.write(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text}
-                                         
+        st.session_state.messages.append({"role": "assistant", "content": response.text})
+        
