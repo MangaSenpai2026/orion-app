@@ -1,4 +1,13 @@
 import streamlit as st
+# Wstrzyknięcie własnej ikony PWA dla telefonu
+st.markdown(
+    """
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/MangaSenpai2026/orion-app/main/1789559829288.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/MangaSenpai2026/orion-app/main/1789559829288.png">
+    """,
+    unsafe_allow_html=True
+)
+
 from google import genai
 
 st.title("🤖 O.R.I.O.N. System")
