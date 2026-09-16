@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 
 st.title("🤖 O.R.I.O.N. System")
 
@@ -8,8 +8,7 @@ if not api_key:
     st.error("Brak klucza GEMINI_API_KEY w Secrets!")
     st.stop()
 
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-2.0-flash")
+client = genai.Client(api_key=api_key)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -25,7 +24,11 @@ if prompt:
         st.write(prompt)
 
     with st.chat_message("assistant"):
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
+        
         
