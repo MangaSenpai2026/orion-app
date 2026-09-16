@@ -45,13 +45,14 @@ if prompt:
         st.write(prompt)
 
     with st.chat_message("assistant"):
-        response = client.models.generate_content(
+                response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt,
             config=genai.types.GenerateContentConfig(
-                system_instruction=system_prompt
+                system_instruction=system_prompt,
+                tools=[{"google_search": {}}]  # Włącza wyszukiwanie i aktualny czas
             )
-        )
+                )
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
         
