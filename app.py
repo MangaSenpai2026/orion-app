@@ -8,6 +8,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 import google.genai as genai
+from google.genai import types
 
 st.title("🤖 O.R.I.O.N. System")
 
@@ -43,17 +44,26 @@ if prompt:
         st.write(prompt)
 
     with st.chat_message("assistant"):
-        full_history = []
-        for m in st.session_state.messages:
-            full_history.append({"role": m["role"], "content": m["content"]})
+        # Mapujemy historię Streamlita na format akceptowany przez czat Google GenAI
+        chat_history = []
+        for m in st.session_state.messages[:-1]:
+            role = "user" if m["role"] == "user" else "model"
+            chat_history.append(
+                types.Content(
+                    role=role,
+                    parts=[types.Part.from_text(text=m["content"])]
+                )
+            )
 
-        response = client.models.generate_content(
+        chat = client.chats.create(
             model="gemini-3.6-flash",
-            contents=full_history,
-            config=genai.types.GenerateContentConfig(
+            history=chat_history,
+            config=types.GenerateContentConfig(
                 system_instruction=system_prompt
             )
         )
+        
+        response = chat.send_message(prompt)
         st.write(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
         
