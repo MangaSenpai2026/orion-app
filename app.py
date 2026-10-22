@@ -56,7 +56,7 @@ if prompt:
             )
 
         chat = client.chats.create(
-            model="gemini-3.6-flash",
+            model="gemini-3.5-flash-lite",
             history=chat_history,
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt
